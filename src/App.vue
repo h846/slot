@@ -4,8 +4,9 @@
       <v-container fill-height>
         <Login @draw="startDrawing" />
         <v-row justify="center" align-content="center">
-          <v-col v-if="prizeMsg != null">
-            {{ prizeMsg }}
+          <v-col v-if="alert">
+            <p>AAAA</p>
+            <PrizeAlert v-bind="prize" :alert="alert" />
           </v-col>
         </v-row>
         <v-row justify="center" align-content="center">
@@ -26,7 +27,7 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col>
+          <v-col v-if="prize == null">
             <v-btn @click="hitDetection">ストップ!!</v-btn>
           </v-col>
         </v-row>
@@ -38,18 +39,21 @@
 <script>
 import axios from "axios";
 import Login from "./components/Login";
+import PrizeAlert from "./components/prizeAlert";
 
 export default {
   name: "App",
 
   components: {
     Login,
+    PrizeAlert,
   },
 
   data: () => ({
     intervalID: null,
     prizeInfo: null,
-    prizeMsg: null,
+    alert: false,
+    prize: null,
     userInfo: { id: "", name: "" },
     peopleImg: [
       { id: 1, name: "Logan", src: require("@/assets/img/1-logan.png") },
@@ -112,7 +116,7 @@ export default {
       console.log(isOutOfStock);
       if (isOutOfStock) {
         clearInterval(this.intervalID);
-        this.prizeMsg = "在庫切れ！HRかISに連絡してください。";
+        alert("在庫切れ！HRかISに連絡してください。");
         return;
       }
 
@@ -136,12 +140,6 @@ export default {
         this.$set(this.slotImg, 0, this.peopleImg[id].src);
         this.$set(this.slotImg, 1, this.peopleImg[id].src);
         this.$set(this.slotImg, 2, this.peopleImg[id].src);
-
-        this.prizeMsg = `おめでとうございます!!
-        ${this.prizeInfo[id].prize_type}
-        に当選しました！！
-        `;
-        console.log(prize);
       } else {
         this.hitDetection();
       }
@@ -149,8 +147,6 @@ export default {
       let sql =
         "UPDATE prize SET quantity = quantity - 1 WHERE ID = " +
         (parseInt(id) + 1);
-      console.log("SQL= " + sql);
-
       axios
         .post("http://lejnet/API/accdb", {
           db: "API/src/cswk/slot-game.accdb",
@@ -158,8 +154,7 @@ export default {
         })
         .then((res) => {
           //当選者記録
-          //ちゃんとカラムも指定してINSERTする
-          sql = `INSERT INTO winners VALUES('${this.userInfo.name}', '${this.userInfo.id}', '${prize.prize_type}')`;
+          sql = `INSERT INTO winners (winner_name, winner_id, prize) VALUES('${this.userInfo.name}', '${this.userInfo.id}', '${prize.prize_type}')`;
           console.log(sql, res);
           axios.post("http://lejnet/API/accdb", {
             db: "API/src/cswk/slot-game.accdb",
@@ -167,6 +162,11 @@ export default {
           });
         })
         .error((e) => console.log(e));
+      //当選商品情報を格納
+      this.prize = this.prizeInfo[id];
+      //this.$set(this.slotImg, 2, this.peopleImg[id].src);
+      //アラート表示
+      this.alert = true;
     },
   },
 };
