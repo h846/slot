@@ -1,34 +1,39 @@
 <template>
   <v-app>
     <v-main>
-      <v-container fill-height>
+      <v-container ustify="center" align-content="center" fill-height>
         <Login @draw="startDrawing" />
+
+        <v-row justify="space-around" align-content="center" no-gutters>
+          <v-col cols="2" style="text-align: center">
+            <v-img :src="slotImg[0]" height="150" />
+          </v-col>
+
+          <v-col cols="2" style="text-align: center">
+            <v-img :src="slotImg[1]" height="150" />
+          </v-col>
+
+          <v-col cols="2" style="text-align: center">
+            <v-img :src="slotImg[2]" height="150" />
+          </v-col>
+        </v-row>
+
+        <v-row>
+          <v-col style="text-align: center" v-if="prize == null">
+            <v-btn
+              elevation="2"
+              x-large
+              rounded
+              dark
+              color="primary"
+              @click="hitDetection"
+              >S T O P</v-btn
+            >
+          </v-col>
+        </v-row>
         <v-row justify="center" align-content="center">
           <v-col v-if="alert">
-            <p>AAAA</p>
             <PrizeAlert v-bind="prize" :alert="alert" />
-          </v-col>
-        </v-row>
-        <v-row justify="center" align-content="center">
-          <v-col clos="4">
-            <div>
-              <img :src="slotImg[0]" />
-            </div>
-          </v-col>
-          <v-col clos="4">
-            <div>
-              <img :src="slotImg[1]" />
-            </div>
-          </v-col>
-          <v-col clos="4">
-            <div>
-              <img :src="slotImg[2]" />
-            </div>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col v-if="prize == null">
-            <v-btn @click="hitDetection">ストップ!!</v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -120,14 +125,14 @@ export default {
         return;
       }
 
-      let random40 = Math.floor(Math.random() * 40); // 0~39
+      let random30 = Math.floor(Math.random() * 30); // 0~29
       let id = null;
       let prize = null;
 
-      if (random40 < 14) {
-        prize = this.prizeInfo[random40];
-        id = random40;
-      } else if (random40 >= 14 && random40 < 24) {
+      if (random30 < 14 && random30 >= 0) {
+        prize = this.prizeInfo[random30];
+        id = random30;
+      } else if (random30 >= 14 && random30 < 24) {
         prize = this.prizeInfo[14];
         id = 14;
       } else {
@@ -140,33 +145,36 @@ export default {
         this.$set(this.slotImg, 0, this.peopleImg[id].src);
         this.$set(this.slotImg, 1, this.peopleImg[id].src);
         this.$set(this.slotImg, 2, this.peopleImg[id].src);
+
+        //賞品在庫数更新
+        let sql =
+          "UPDATE prize SET quantity = quantity - 1 WHERE ID = " +
+          (parseInt(id) + 1);
+        axios
+          .post("http://lejnet/API/accdb", {
+            db: "API/src/cswk/slot-game.accdb",
+            sql: sql,
+          })
+          .then((res) => {
+            //当選者記録
+            sql = `INSERT INTO winners (winner_name, winner_id, prize) VALUES('${this.userInfo.name}', '${this.userInfo.id}', '${prize.prize_type}')`;
+            console.log(sql, res);
+            axios
+              .post("http://lejnet/API/accdb", {
+                db: "API/src/cswk/slot-game.accdb",
+                sql: sql,
+              })
+              .then((res) => {
+                //当選商品情報を格納
+                this.prize = this.prizeInfo[id];
+                //アラート表示
+                this.alert = true;
+                console.log(res);
+              });
+          });
       } else {
         this.hitDetection();
       }
-      //賞品在庫数更新
-      let sql =
-        "UPDATE prize SET quantity = quantity - 1 WHERE ID = " +
-        (parseInt(id) + 1);
-      axios
-        .post("http://lejnet/API/accdb", {
-          db: "API/src/cswk/slot-game.accdb",
-          sql: sql,
-        })
-        .then((res) => {
-          //当選者記録
-          sql = `INSERT INTO winners (winner_name, winner_id, prize) VALUES('${this.userInfo.name}', '${this.userInfo.id}', '${prize.prize_type}')`;
-          console.log(sql, res);
-          axios.post("http://lejnet/API/accdb", {
-            db: "API/src/cswk/slot-game.accdb",
-            sql: sql,
-          });
-        })
-        .error((e) => console.log(e));
-      //当選商品情報を格納
-      this.prize = this.prizeInfo[id];
-      //this.$set(this.slotImg, 2, this.peopleImg[id].src);
-      //アラート表示
-      this.alert = true;
     },
   },
 };
