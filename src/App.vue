@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-main>
-      <v-container ustify="center" align-content="center" fill-height>
+      <v-container justify="center" align-content="center" fill-height>
         <Login @draw="startDrawing" />
 
         <v-row justify="space-around" align-content="center" no-gutters>
@@ -42,12 +42,12 @@
 </template>
 
 <script>
-import axios from "axios";
-import Login from "./components/Login";
-import PrizeAlert from "./components/prizeAlert";
+import axios from 'axios';
+import Login from './components/Login';
+import PrizeAlert from './components/prizeAlert';
 
 export default {
-  name: "App",
+  name: 'App',
 
   components: {
     Login,
@@ -59,35 +59,100 @@ export default {
     prizeInfo: null,
     alert: false,
     prize: null,
-    userInfo: { id: "", name: "" },
+    userInfo: {
+      id: '',
+      name: '',
+    },
     peopleImg: [
-      { id: 1, name: "Logan", src: require("@/assets/img/1-logan.png") },
-      { id: 2, name: "risa", src: require("@/assets/img/3-risa.png") },
-      { id: 3, name: "Masami", src: require("@/assets/img/2-masami.png") },
-      { id: 4, name: "Masami2", src: require("@/assets/img/2-masami.png") },
-      { id: 5, name: "Takashi", src: require("@/assets/img/4-takashi.png") },
-      { id: 6, name: "Toru", src: require("@/assets/img/5-toru.png") },
-      { id: 7, name: "Masakuni", src: require("@/assets/img/6-masakuni.png") },
-      { id: 8, name: "Tomoko", src: require("@/assets/img/7-tomoko.png") },
+      {
+        id: 1,
+        name: 'Jeffrey',
+        src: require('@/assets/img/1-jeffrey.png'),
+      },
+      {
+        id: 2,
+        name: 'Risa',
+        src: require('@/assets/img/3-risa.png'),
+      },
+      {
+        id: 3,
+        name: 'Risa2',
+        src: require('@/assets/img/3-risa.png'),
+      },
+      {
+        id: 4,
+        name: 'Masami',
+        src: require('@/assets/img/2-masami.png'),
+      },
+      {
+        id: 5,
+        name: 'Masami2',
+        src: require('@/assets/img/2-masami.png'),
+      },
+      {
+        id: 6,
+        name: 'Takashi',
+        src: require('@/assets/img/4-takashi.png'),
+      },
+      {
+        id: 7,
+        name: 'Toru',
+        src: require('@/assets/img/5-toru.png'),
+      },
+      {
+        id: 8,
+        name: 'Masakuni',
+        src: require('@/assets/img/6-masakuni.png'),
+      },
       {
         id: 9,
-        name: "Yoshitaka",
-        src: require("@/assets/img/13-yoshitaka.png"),
+        name: 'Tomoko',
+        src: require('@/assets/img/7-tomoko.png'),
       },
-      { id: 10, name: "Yoko", src: require("@/assets/img/8-yoko.png") },
-      { id: 11, name: "Tsutomu", src: require("@/assets/img/9-tsutomu.png") },
-      { id: 12, name: "Yumiko", src: require("@/assets/img/10-yumiko.png") },
-      { id: 13, name: "Ken", src: require("@/assets/img/11-ken.png") },
-      { id: 14, name: "Naoko", src: require("@/assets/img/12-naoko.png") },
+      {
+        id: 10,
+        name: 'Yoshitaka',
+        src: require('@/assets/img/13-yoshitaka.png'),
+      },
+      {
+        id: 11,
+        name: 'Yoshitaka2',
+        src: require('@/assets/img/13-yoshitaka.png'),
+      },
+      {
+        id: 12,
+        name: 'Yoko',
+        src: require('@/assets/img/8-yoko.png'),
+      },
+      {
+        id: 13,
+        name: 'Tsutomu',
+        src: require('@/assets/img/9-tsutomu.png'),
+      },
+      {
+        id: 14,
+        name: 'Yumiko',
+        src: require('@/assets/img/10-yumiko.png'),
+      },
       {
         id: 15,
-        name: "Operator",
-        src: require("@/assets/img/15-operator.png"),
+        name: 'Ken',
+        src: require('@/assets/img/11-ken.png'),
       },
       {
         id: 16,
-        name: "Omatsuri",
-        src: require("@/assets/img/14-omatsuri.png"),
+        name: 'Naoko',
+        src: require('@/assets/img/12-naoko.png'),
+      },
+      {
+        id: 17,
+        name: 'Operator',
+        src: require('@/assets/img/15-operator.png'),
+      },
+      {
+        id: 18,
+        name: 'le-novel',
+        src: require('@/assets/img/14-le-novel.png'),
       },
     ],
     slotImg: [],
@@ -99,12 +164,12 @@ export default {
       //slot-dbから賞品情報を取得
       axios
         .get(
-          "http://lejnet/API/accdb?db=API/src/cswk/slot-game.accdb&table=prize"
+          'http://lejnet/API/accdb?db=API/src/cswk/slot-game.accdb&table=prize'
         )
-        .then((res) => (this.prizeInfo = res.data));
+        .then(res => (this.prizeInfo = res.data));
       //100ミリ秒ごとに画像を変える
       this.intervalID = setInterval(
-        function () {
+        function() {
           this.$set(this.slotImg, 0, this.getRandPeopleImg());
           this.$set(this.slotImg, 1, this.getRandPeopleImg());
           this.$set(this.slotImg, 2, this.getRandPeopleImg());
@@ -113,58 +178,62 @@ export default {
       );
     },
     getRandPeopleImg() {
-      return this.peopleImg[Math.floor(Math.random() * 15)].src;
+      return this.peopleImg[Math.floor(Math.random() * 17)].src;
     },
     hitDetection() {
       //在庫チェック
-      let isOutOfStock = this.prizeInfo.every((val) => val.quantity == 0);
-      console.log(isOutOfStock);
+      let isOutOfStock = this.prizeInfo.every(val => val.quantity < 1);
       if (isOutOfStock) {
         clearInterval(this.intervalID);
-        alert("在庫切れ！HRかISに連絡してください。");
+        alert('在庫切れ！HRかISに連絡してください。');
         return;
       }
 
-      let random30 = Math.floor(Math.random() * 30); // 0~29
+      let random_num = Math.floor(Math.random() * 17); // 0~99
       let id = null;
       let prize = null;
 
-      if (random30 < 14 && random30 >= 0) {
-        prize = this.prizeInfo[random30];
-        id = random30;
-      } else if (random30 >= 14 && random30 < 24) {
-        prize = this.prizeInfo[14];
-        id = 14;
+      console.log(this.prizeInfo);
+
+      if (random_num < 16 && random_num >= 0) {
+        prize = this.prizeInfo[random_num];
+        id = random_num;
+      } else if (random_num >= 16 && random_num < 50) {
+        prize = this.prizeInfo[16];
+        id = 16;
       } else {
-        prize = this.prizeInfo[15];
-        id = 15;
+        prize = this.prizeInfo[17];
+        id = 17;
       }
+      console.log(id);
+      console.log('PRIZE IS ++++++++' + JSON.stringify(prize));
 
       if (prize.quantity > 0) {
         clearInterval(this.intervalID);
-        this.$set(this.slotImg, 0, this.peopleImg[id].src);
-        this.$set(this.slotImg, 1, this.peopleImg[id].src);
-        this.$set(this.slotImg, 2, this.peopleImg[id].src);
+        let img = this.peopleImg[parseInt(id) - 1].src;
+        this.$set(this.slotImg, 0, img);
+        this.$set(this.slotImg, 1, img);
+        this.$set(this.slotImg, 2, img);
 
         //賞品在庫数更新
         let sql =
-          "UPDATE prize SET quantity = quantity - 1 WHERE ID = " +
+          'UPDATE prize SET quantity = quantity - 1 WHERE ID = ' +
           (parseInt(id) + 1);
         axios
-          .post("http://lejnet/API/accdb", {
-            db: "API/src/cswk/slot-game.accdb",
+          .post('http://lejnet/API/accdb', {
+            db: 'API/src/cswk/slot-game.accdb',
             sql: sql,
           })
-          .then((res) => {
+          .then(res => {
             //当選者記録
             sql = `INSERT INTO winners (winner_name, winner_id, prize) VALUES('${this.userInfo.name}', '${this.userInfo.id}', '${prize.prize_type}')`;
             console.log(sql, res);
             axios
-              .post("http://lejnet/API/accdb", {
-                db: "API/src/cswk/slot-game.accdb",
+              .post('http://lejnet/API/accdb', {
+                db: 'API/src/cswk/slot-game.accdb',
                 sql: sql,
               })
-              .then((res) => {
+              .then(res => {
                 //当選商品情報を格納
                 this.prize = this.prizeInfo[id];
                 //アラート表示
