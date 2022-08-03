@@ -8,15 +8,17 @@
       text-center
       px-4
     >
-      <p class="font-weight-bold">
-        おめでとうございます！!
-        <span class="h1">{{ prize_type }}</span>
-        に当選しました。
+      <p class="font-weight-bold text-center ma-0">
+        おめでとうございます！
+        <span class="font-weight-black">{{ prize_type }}</span>
+        に当選しました！
       </p>
     </v-alert>
-    <v-card class="mx-auto" width="300">
-      <v-img class="white--text align-end" :src="photo_url"> </v-img>
-      <v-card-title class="font-weight-black">{{ item_name }}</v-card-title>
+    <v-card>
+      <v-img :src="photo_url" contain max-height="200" class="mx-auto"> </v-img>
+      <div class="text-body font-weight-black text-center my-3">
+        {{ item_name }}
+      </div>
       <v-spacer></v-spacer>
       <v-divider class="mx-4"></v-divider>
       <v-card-subtitle>
@@ -25,9 +27,10 @@
       <v-card-actions>
         <v-btn
           color="primary"
+          den
           block
           elevation="2"
-          x-large
+          depressed
           href="http://lejnet/"
         >
           LEJ-NETへもどる

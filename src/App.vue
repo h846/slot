@@ -1,20 +1,32 @@
 <template>
   <v-app>
     <v-main>
-      <v-container justify="center" align-content="center" fill-height>
+      <v-container
+        justify="center"
+        align-content="center"
+        fill-height
+        style="width: 600px"
+        v-show="disp"
+      >
         <Login @draw="startDrawing" />
 
         <v-row justify="space-around" align-content="center" no-gutters>
-          <v-col cols="2" style="text-align: center">
-            <v-img :src="slotImg[0]" height="150" />
+          <v-col cols="4" style="text-align: center">
+            <div class="reel">
+              <v-img :src="slotImg[0]" height="150" />
+            </div>
           </v-col>
 
-          <v-col cols="2" style="text-align: center">
-            <v-img :src="slotImg[1]" height="150" />
+          <v-col cols="4" style="text-align: center">
+            <div class="reel">
+              <v-img :src="slotImg[1]" height="150" />
+            </div>
           </v-col>
 
-          <v-col cols="2" style="text-align: center">
-            <v-img :src="slotImg[2]" height="150" />
+          <v-col cols="4" style="text-align: center">
+            <div class="reel">
+              <v-img :src="slotImg[2]" height="150" />
+            </div>
           </v-col>
         </v-row>
 
@@ -24,6 +36,7 @@
               elevation="2"
               x-large
               rounded
+              block
               dark
               color="primary"
               @click="hitDetection"
@@ -55,6 +68,7 @@ export default {
   },
 
   data: () => ({
+    disp: false,
     intervalID: null,
     prizeInfo: null,
     alert: false,
@@ -160,13 +174,20 @@ export default {
 
   methods: {
     startDrawing(userInfo) {
+      this.disp = true;
       this.userInfo = userInfo;
       //slot-dbから賞品情報を取得
       axios
         .get(
           'http://lejnet/API/accdb?db=API/src/cswk/slot-game.accdb&table=prize'
         )
-        .then(res => (this.prizeInfo = res.data));
+        .then(res => {
+          this.prizeInfo = res.data;
+          this.prizeInfo.sort((a, b) => {
+            if (a.ID < b.ID) return -1;
+            if (a.ID > b.ID) return 1;
+          });
+        });
       //100ミリ秒ごとに画像を変える
       this.intervalID = setInterval(
         function() {
@@ -181,6 +202,7 @@ export default {
       return this.peopleImg[Math.floor(Math.random() * 17)].src;
     },
     hitDetection() {
+      console.log(this.prizeInfo);
       //在庫チェック
       let isOutOfStock = this.prizeInfo.every(val => val.quantity < 1);
       if (isOutOfStock) {
@@ -189,24 +211,23 @@ export default {
         return;
       }
 
-      let random_num = Math.floor(Math.random() * 17); // 0~99
+      let random_num = Math.floor(Math.random() * 60); // 0~59
+      console.log('num ' + random_num);
       let id = null;
       let prize = null;
 
-      console.log(this.prizeInfo);
-
       if (random_num < 16 && random_num >= 0) {
         prize = this.prizeInfo[random_num];
-        id = random_num;
-      } else if (random_num >= 16 && random_num < 50) {
+        id = random_num + 1;
+      } else if (random_num >= 16 && random_num < 35) {
         prize = this.prizeInfo[16];
-        id = 16;
-      } else {
-        prize = this.prizeInfo[17];
         id = 17;
+      } else if (random_num >= 35) {
+        prize = this.prizeInfo[17];
+        id = 18;
       }
-      console.log(id);
-      console.log('PRIZE IS ++++++++' + JSON.stringify(prize));
+      console.log('id ' + id);
+      console.log('PRIZE IS ' + JSON.stringify(prize));
 
       if (prize.quantity > 0) {
         clearInterval(this.intervalID);
@@ -216,9 +237,7 @@ export default {
         this.$set(this.slotImg, 2, img);
 
         //賞品在庫数更新
-        let sql =
-          'UPDATE prize SET quantity = quantity - 1 WHERE ID = ' +
-          (parseInt(id) + 1);
+        let sql = 'UPDATE prize SET quantity = quantity - 1 WHERE ID = ' + id;
         axios
           .post('http://lejnet/API/accdb', {
             db: 'API/src/cswk/slot-game.accdb',
@@ -235,7 +254,7 @@ export default {
               })
               .then(res => {
                 //当選商品情報を格納
-                this.prize = this.prizeInfo[id];
+                this.prize = this.prizeInfo[id - 1];
                 //アラート表示
                 this.alert = true;
                 console.log(res);
@@ -248,4 +267,9 @@ export default {
   },
 };
 </script>
-<style lang="stylus" scoped></style>
+<style lang="stylus" scoped>
+
+.reel{
+  padding:5px;
+}
+</style>

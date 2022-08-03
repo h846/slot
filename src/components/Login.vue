@@ -67,27 +67,27 @@
   </v-row>
 </template>
 <script>
-import axios from "axios";
+import axios from 'axios';
 
 export default {
   data: () => ({
     dialog: true,
-    subDialog: { disp: false, msg: "" },
-    userInfo: { id: "", name: "" },
+    subDialog: { disp: false, msg: '' },
+    userInfo: { id: '', name: '' },
     winners: [],
   }),
   methods: {
     verifyUser() {
-      if (this.userInfo.name == "" || this.userInfo.id == "") {
-        this.subDialog.msg = "社員番号またはお名前が未入力です";
+      if (this.userInfo.name == '' || this.userInfo.id == '') {
+        this.subDialog.msg = '社員番号またはお名前が未入力です';
         this.subDialog.disp = !this.subDialog.disp;
         return;
       } else {
         this.subDialog.msg =
-          "以下の内容で間違いありませんか？" +
-          "\nID: " +
+          '以下の内容で間違いありませんか？' +
+          '\nID: ' +
           this.userInfo.id +
-          "\n氏名: " +
+          '\n氏名: ' +
           this.userInfo.name;
         this.subDialog.disp = !this.subDialog.disp;
       }
@@ -98,24 +98,24 @@ export default {
 
       //すでにプレイ済かチェック
       let isPlayed = this.winners.some(
-        (item) => item.winner_id == this.userInfo.id
+        item => item.winner_id == this.userInfo.id
       );
 
       if (isPlayed) {
-        alert("すでに抽選済です！");
-        location.href = "http://lejnet/";
+        alert('すでに抽選済です！');
+        location.href = 'http://lejnet/';
+      } else {
+        this.$emit('draw', this.userInfo);
       }
-
-      this.$emit("draw", this.userInfo);
     },
   },
   created() {
     // すでに抽選したユーザーかチェックするために当選者情報を取得
     axios
       .get(
-        "http://lejnet/API/accdb?db=API/src/cswk/slot-game.accdb&table=winners"
+        'http://lejnet/API/accdb?db=API/src/cswk/slot-game.accdb&table=winners'
       )
-      .then((res) => {
+      .then(res => {
         this.winners = res.data;
       });
   },
